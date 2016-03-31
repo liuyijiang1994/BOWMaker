@@ -15,9 +15,6 @@ import Service.WordSpliter;
 import until.FileHelper;
 import until.XmlHelper;
 
-import model.Document;
-import model.Word;
-
 public class mian {
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();

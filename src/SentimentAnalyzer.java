@@ -26,6 +26,7 @@ public class SentimentAnalyzer {
 		int wordNum = 0;
 		List<String> texts = null;
 		List<Map<String, Integer>> documents = new ArrayList<Map<String, Integer>>();
+		List< List<Word>> bagOfWord=new ArrayList<List<Word>>();
 		Map<String, int[]> wordVector = new TreeMap<String, int[]>();
 		WordSpliter wordSpliter = new AccurateSplit();
 
@@ -69,15 +70,56 @@ public class SentimentAnalyzer {
 		}
 		System.out.println("TF over, begin to deal IDF");
 
-		//去掉出现太少的词语 减少稀疏性
-		Set<String> names=new HashSet<String>();
-		names.addAll(wordVector.keySet());
-		for (String name : names) {
+		//去掉出现太少的词语 减少稀疏性		
+		long totalWordNum=0L;		
+		for (String name : wordVector.keySet()) {
 			System.out.println(name+" "+ (wordVector.get(name))[2]);	
+			totalWordNum+= (wordVector.get(name))[2];
 		}
-		names=null;
 		
 		long end = System.currentTimeMillis();
 		System.out.println("共有 " + wordVector.size() + " 个词语纬度，用时 " + (end - start) + " 毫秒");
+		System.out.println("开始构建libsvm格式数据");
+		
+		 for (String name : wordVector.keySet()) {
+			 for (Map<String, Integer> term : documents) {
+				 if (term.keySet().contains(name)) {
+					 (wordVector.get(name))[1] += 1;
+				 }
+			 }
+		 }
+		
+		//计算每篇文档中的特征词的TF-IDF值
+		int docSize=documents.size();
+		List<Word> doc=new ArrayList<Word>();
+		for (Map<String, Integer> dterms : documents) {
+			int dtermsSize=dterms.size();
+			for (String word : dterms.keySet()) {
+				if(wordVector.containsKey(word)){
+					double tfidf=( dterms.get(word)*1.0/dtermsSize ) * Math.log( docSize/wordVector.get(word)[1] +0.01 );
+					doc.add(new Word(wordVector.get(word)[0], tfidf));
+				}
+			}
+			
+			if(doc!=null && doc.size()!=0){
+				String a= "1";
+				for (Word word : doc) {
+					a+=" "+word.getIndex()+":"+word.getWeight();
+				}
+				System.out.println(a);
+				bagOfWord.add(doc);
+				doc.clear();
+			}
+			
+		}
+		
+		//样例输出
+		for (int j = 0; j < 10; j++) {
+			String a= "1";
+			for (Word word : bagOfWord.get(j)) {
+				a+=" "+word.getIndex()+":"+word.getWeight();
+			}
+			System.out.println(a);
+		}
 	}
 }

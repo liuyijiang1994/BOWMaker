@@ -1,25 +1,24 @@
 package model;
 
-import org.ansj.domain.Term;
 
 public class Word {
-	private Term term;
-	private int cont;
-	
-	public Word() {
-		this.cont=0;
+	private int index;
+	private double weight;
+	public double getWeight() {
+		return weight;
+	}
+	public void setWeight(double weight) {
+		this.weight = weight;
 	}
 	
-	public Term getTerm() {
-		return term;
+	public Word(int index,double weight) {
+		this.index=index;
+		this.weight=weight;
 	}
-	public void setTerm(Term term) {
-		this.term = term;
+	public int getIndex() {
+		return index;
 	}
-	public int getCont() {
-		return cont;
-	}
-	public void setCont(int cont) {
-		this.cont = cont;
+	public void setIndex(int index) {
+		this.index = index;
 	}
 }
